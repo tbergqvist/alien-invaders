@@ -1,4 +1,4 @@
-use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::{component::Component, query::With, system::{Commands, Query, Res, ResMut}}, input::{keyboard::KeyCode, ButtonInput}, math::{Vec2, Vec3}, prelude::Camera2dBundle, render::{camera::{ClearColor, ScalingMode}, color::Color}, sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout}, transform::components::Transform, utils::default};
+use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::{component::Component, query::With, system::{Commands, Query, Res, ResMut}}, input::{keyboard::KeyCode, ButtonInput}, math::{Vec2, Vec3}, prelude::{Camera2dBundle, Resource}, render::{camera::{ClearColor, ScalingMode}, color::Color}, sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout}, transform::components::Transform, utils::default};
 
 pub struct GamePlugin;
 
@@ -11,12 +11,17 @@ struct Alien;
 #[derive(Component)]
 struct Velocity(f32);
 
+#[derive(Resource)]
+struct AlienCollectiveState {
+	moving_direction: f32,
+}
+
 impl Plugin for GamePlugin {
 	fn build(&self, app: &mut App) {
 		app
 			.insert_resource(ClearColor(Color::BLACK))
 			.add_systems(Startup, create_world)
-			.add_systems(FixedUpdate, (move_entities))
+			.add_systems(FixedUpdate, (move_entities, move_aliens))
 			.add_systems(Update, handle_player_input)
 		;
 	}
@@ -34,6 +39,7 @@ fn create_world(
 	camera.transform = Transform::from_translation(Vec3::new(140., 100., 1.));
 	camera.projection.scaling_mode = ScalingMode::WindowSize(4.);
 	commands.spawn(camera);
+	commands.insert_resource(AlienCollectiveState { moving_direction: 1. });
 	commands.spawn((
 			SpriteSheetBundle {
 					texture: player_texture,
@@ -86,8 +92,27 @@ fn spawn_specific_aliens(commands: &mut Commands, amounts: i32, start_y: f32, sp
 			let x = i % 11;
 			let y = i / 11;
 			sheet.transform.translation = Vec3::new(x as f32 * 20., start_y - (y as f32 * 20.), 0.);
-			commands.spawn((sheet, Velocity(0.), Alien));
+			commands.spawn((sheet, Alien));
 		}
+}
+
+fn move_aliens(mut alien_state: ResMut<AlienCollectiveState>, mut query: Query<&mut Transform, With<Alien>>) {
+	let mut reached_edge = false;
+	let moving_speed = alien_state.moving_direction * 0.1;
+	for mut transform in query.iter_mut() {
+		let x = transform.translation.x;
+		transform.translation.x += moving_speed;
+		if (x < 0. && alien_state.moving_direction < 0.) || (x > 280. && alien_state.moving_direction > 0.) {
+			reached_edge = true;
+		}
+	}
+
+	if reached_edge {
+		alien_state.moving_direction *= -1.;
+		for mut transform in query.iter_mut() {
+			transform.translation.y -= 20.;
+		}
+	}
 }
 
 fn get_spritesheet_component(path: &'static str, asset_server: &Res<AssetServer>, texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>) -> SpriteSheetBundle {
