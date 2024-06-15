@@ -1,6 +1,7 @@
 use bevy::{app::{App, PluginGroup}, render::{settings::{Backends, RenderCreation, WgpuSettings}, texture::ImagePlugin, RenderPlugin}, utils::default, window::{Window, WindowPlugin, WindowResolution}, DefaultPlugins};
 use game_plugin::GamePlugin;
 
+mod animation;
 mod game_plugin;
 
 fn main() {

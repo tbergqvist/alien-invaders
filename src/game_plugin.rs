@@ -1,4 +1,6 @@
-use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::{component::Component, query::With, system::{Commands, Query, Res, ResMut}}, input::{keyboard::KeyCode, ButtonInput}, math::{Vec2, Vec3}, prelude::{Camera2dBundle, Resource}, render::{camera::{ClearColor, ScalingMode}, color::Color}, sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout}, transform::components::Transform, utils::default};
+use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::{component::Component, query::With, system::{Commands, Query, Res, ResMut}}, input::{keyboard::KeyCode, ButtonInput}, math::{Vec2, Vec3}, prelude::{Camera2dBundle, Resource}, render::{camera::{ClearColor, ScalingMode}, color::Color}, sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout}, time::{Timer, TimerMode}, transform::components::Transform, utils::default};
+
+use crate::animation::{animate, AnimationIndexes, AnimationTimer};
 
 pub struct GamePlugin;
 
@@ -22,7 +24,7 @@ impl Plugin for GamePlugin {
 			.insert_resource(ClearColor(Color::BLACK))
 			.add_systems(Startup, create_world)
 			.add_systems(FixedUpdate, (move_entities, move_aliens))
-			.add_systems(Update, handle_player_input)
+			.add_systems(Update, (handle_player_input, animate))
 		;
 	}
 }
@@ -92,7 +94,7 @@ fn spawn_specific_aliens(commands: &mut Commands, amounts: i32, start_y: f32, sp
 			let x = i % 11;
 			let y = i / 11;
 			sheet.transform.translation = Vec3::new(x as f32 * 20., start_y - (y as f32 * 20.), 0.);
-			commands.spawn((sheet, Alien));
+			commands.spawn((sheet, Alien, AnimationIndexes { start: 0, end: 1 }, AnimationTimer(Timer::from_seconds(y as f32, TimerMode::Once))));
 		}
 }
 
