@@ -1,7 +1,10 @@
 use bevy::{app::{App, PluginGroup}, render::{settings::{Backends, RenderCreation, WgpuSettings}, texture::ImagePlugin, RenderPlugin}, utils::default, window::{Window, WindowPlugin, WindowResolution}, DefaultPlugins};
 use game_plugin::GamePlugin;
 
+mod movement;
 mod animation;
+mod player;
+mod alien;
 mod game_plugin;
 
 fn main() {
