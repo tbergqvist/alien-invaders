@@ -1,9 +1,12 @@
-use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::{component::Component, query::With, system::{Commands, Query, Res, ResMut}}, input::{keyboard::KeyCode, ButtonInput}, math::{Vec2, Vec3}, prelude::Camera2dBundle, render::{camera::{ClearColor, ScalingMode}, color::Color}, sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout}, transform::components::Transform, utils::default, window::WindowResolution};
+use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::{component::Component, query::With, system::{Commands, Query, Res, ResMut}}, input::{keyboard::KeyCode, ButtonInput}, math::{Vec2, Vec3}, prelude::Camera2dBundle, render::{camera::{ClearColor, ScalingMode}, color::Color}, sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout}, transform::components::Transform, utils::default};
 
 pub struct GamePlugin;
 
 #[derive(Component)]
 struct Player;
+
+#[derive(Component)]
+struct Alien;
 
 #[derive(Component)]
 struct Velocity(f32);
@@ -79,25 +82,24 @@ fn spawn_aliens(commands: &mut Commands, asset_server: &Res<AssetServer>, textur
 
 fn spawn_specific_aliens(commands: &mut Commands, amounts: i32, start_y: f32, spritesheet: SpriteSheetBundle) {
 		for i in 0..amounts {
-				let mut sheet = spritesheet.clone();
-				let x = i % 11;
-				let y = i / 11;
-				sheet.transform.translation = Vec3::new(x as f32 * 20., start_y - (y as f32 * 20.), 0.);
-				commands.spawn((sheet, Velocity(0.)));
-			}
+			let mut sheet = spritesheet.clone();
+			let x = i % 11;
+			let y = i / 11;
+			sheet.transform.translation = Vec3::new(x as f32 * 20., start_y - (y as f32 * 20.), 0.);
+			commands.spawn((sheet, Velocity(0.), Alien));
+		}
 }
 
 fn get_spritesheet_component(path: &'static str, asset_server: &Res<AssetServer>, texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>) -> SpriteSheetBundle {
-			let alien1_texture = asset_server.load(path);
-			let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 1, 2, None, None);
-			let texture_atlas_layout = texture_atlas_layouts.add(layout);
-			let sprite_sheet1 = SpriteSheetBundle {
-					texture: alien1_texture,
-					atlas: TextureAtlas {
-							layout: texture_atlas_layout,
-							index: 0,
-					},
-					..default()
-				};
-			sprite_sheet1
+	let alien1_texture = asset_server.load(path);
+	let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 1, 2, None, None);
+	let texture_atlas_layout = texture_atlas_layouts.add(layout);
+	SpriteSheetBundle {
+		texture: alien1_texture,
+		atlas: TextureAtlas {
+			layout: texture_atlas_layout,
+			index: 0,
+		},
+		..default()
+	}
 	}
