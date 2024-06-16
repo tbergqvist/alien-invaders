@@ -1,6 +1,6 @@
-use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::system::{Commands, Res, ResMut}, math::{Vec2, Vec3}, prelude::Camera2dBundle, render::{camera::{ClearColor, ScalingMode}, color::Color}, sprite::TextureAtlasLayout, transform::components::Transform};
+use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::system::{Commands, Res, ResMut}, math::Vec2, render::{camera::ClearColor, color::Color}, sprite::TextureAtlasLayout};
 
-use crate::{alien::{move_aliens, spawn_aliens, AlienCollectiveState}, animation::animate, movement::move_entities, player::{handle_player_input, spawn_player}};
+use crate::{alien::{create_aliens, move_aliens, AlienCollectiveState}, animation::animate, bundles::{create_camera_bundle, create_player_bundle}, movement::move_entities, player::handle_player_input};
 
 pub struct GamePlugin;
 
@@ -20,15 +20,14 @@ fn create_world(
 	asset_server: Res<AssetServer>,
 	mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-	spawn_camera(&mut commands);
-	spawn_player(&mut commands, &asset_server, &mut texture_atlas_layouts);
-	spawn_aliens(&mut commands, &asset_server, &mut texture_atlas_layouts);
-}
-
-fn spawn_camera(commands: &mut Commands) {
-	let mut camera = Camera2dBundle::default();
-	camera.transform = Transform::from_translation(Vec3::new(140., 100., 1.));
-	camera.projection.scaling_mode = ScalingMode::WindowSize(4.);
-	commands.spawn(camera);
+	let player_texture = asset_server.load("player.png");
+	let alien_textures = vec![asset_server.load("alien1.png"), asset_server.load("alien2.png"), asset_server.load("alien3.png")];
+	let player_layout = texture_atlas_layouts.add(TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 1, 1, None, None));
+	let alien_layout = texture_atlas_layouts.add(TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 1, 2, None, None));
+	
+	commands.spawn(create_camera_bundle());
 	commands.insert_resource(AlienCollectiveState::new());
+	commands.spawn(create_player_bundle(player_texture, player_layout));
+	commands.spawn_batch(create_aliens(alien_textures, alien_layout));
+
 }

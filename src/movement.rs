@@ -1,7 +1,6 @@
-use bevy::{prelude::{Component, Query}, transform::components::Transform};
+use bevy::{prelude::Query, transform::components::Transform};
 
-#[derive(Component)]
-pub struct Velocity(pub f32);
+use crate::components::Velocity;
 
 pub fn move_entities(mut query: Query<(&mut Transform, &Velocity)>) {
 	for (mut transform, velocity) in query.iter_mut() {

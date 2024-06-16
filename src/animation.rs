@@ -1,13 +1,6 @@
-use bevy::{prelude::{Component, Query, Res}, sprite::TextureAtlas, time::{Time, Timer, TimerMode}};
+use bevy::{prelude::{Query, Res}, sprite::TextureAtlas, time::{Time, Timer, TimerMode}};
 
-#[derive(Component)]
-pub struct AnimationIndexes {
-	pub start: usize,
-	pub end: usize,
-}
-
-#[derive(Component)]
-pub struct AnimationTimer(pub Timer);
+use crate::components::{AnimationIndexes, AnimationTimer};
 
 pub fn animate(
 	time: Res<Time>,

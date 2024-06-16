@@ -5,6 +5,9 @@ mod movement;
 mod animation;
 mod player;
 mod alien;
+mod collision;
+mod bundles;
+mod components;
 mod game_plugin;
 
 fn main() {
