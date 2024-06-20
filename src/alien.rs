@@ -31,7 +31,7 @@ fn create_specific_aliens(amounts: i32, start_y: f32, texture: Handle<Image>, la
 			let y = i / 11;
 
 			let position = Vec3::new(x as f32 * 20., start_y - (y as f32 * 20.), 0.);
-			create_alien_bundle(position, y, texture.clone(), layout.clone())
+			create_alien_bundle(position, y as usize, texture.clone(), layout.clone())
 		})
 		.collect()
 }

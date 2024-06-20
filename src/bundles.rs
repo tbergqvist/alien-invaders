@@ -26,20 +26,20 @@ pub fn create_player_bundle(texture: Handle<Image>, texture_atlas_layout: Handle
 	)
 }
 
-pub fn create_alien_bundle(location: Vec3, timer_start: i32, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
+pub fn create_alien_bundle(location: Vec3, start_frame: usize, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
 	(
 		SpriteSheetBundle {
 			texture,
 			atlas: TextureAtlas {
 				layout: texture_atlas_layout,
-				index: 0,
+				index: start_frame as usize,
 			},
 			transform: Transform::from_translation(location),
 			..default()
 		}, 
 		Alien, 
 		AnimationIndexes { start: 0, end: 1 }, 
-		AnimationTimer(Timer::from_seconds(timer_start as f32, TimerMode::Once))
+		AnimationTimer(Timer::from_seconds(1., TimerMode::Repeating))
 	)
 }
 
