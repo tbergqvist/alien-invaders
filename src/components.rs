@@ -20,8 +20,7 @@ pub struct AnimationTimer(pub Timer);
 
 #[derive(Component)]
 pub struct Hitable {
-	pub width: f32,
-	pub height: f32,
+	pub size: Vec2
 }
 
 #[derive(Component)]

@@ -39,7 +39,8 @@ pub fn create_alien_bundle(location: Vec3, start_frame: usize, texture: Handle<I
 		}, 
 		Alien, 
 		AnimationIndexes { start: 0, end: 1 }, 
-		AnimationTimer(Timer::from_seconds(1., TimerMode::Repeating))
+		AnimationTimer(Timer::from_seconds(1., TimerMode::Repeating)),
+		Hitable { size: Vec2::new(16., 12.) },
 	)
 }
 
@@ -55,7 +56,7 @@ pub fn create_player_projectile(location: Vec3, texture: Handle<Image>, texture_
 			..default()
 		},
 		Velocity(Vec2{ x: 0., y: 2. }),
-		Hitable { width: 5., height: 10. },
+		Hitable { size: Vec2::new(3., 10.) },
 		AnimationIndexes { start: 0, end: 1 },
 		AnimationTimer(Timer::from_seconds(0.01, TimerMode::Repeating)),
 		Projectile,
