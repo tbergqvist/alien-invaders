@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use bevy::{asset::Handle, math::Vec2, prelude::{Bundle, Commands, Query, Res, ResMut, With}, render::texture::Image, sprite::TextureAtlasLayout, time::Time, transform::components::Transform};
+use bevy::{asset::Handle, math::Vec2, prelude::{Bundle, Commands, Query, Res, With}, render::texture::Image, sprite::TextureAtlasLayout, time::Time, transform::components::{GlobalTransform, Transform}};
 
-use crate::{bundles::{create_alien_bundle, create_alien_projectile}, components::Alien, resources::{AlienCollectiveState, AssetStore}};
+use crate::{bundles::{create_alien_bundle, create_alien_projectile}, components::Alien, resources::{AlienCollective, AssetStore}};
 
 pub fn create_aliens(textures: Vec<Handle<Image>>, layout: Handle<TextureAtlasLayout>) -> Vec<impl Bundle> {
 	vec![create_specific_aliens( 11, 200., textures[0].clone(), layout.clone()),
@@ -25,22 +25,15 @@ fn create_specific_aliens(amounts: i32, start_y: f32, texture: Handle<Image>, la
 		.collect()
 }
 
-pub fn move_aliens(mut alien_state: ResMut<AlienCollectiveState>, mut query: Query<&mut Transform, With<Alien>>) {
-	let mut reached_edge = false;
-	let moving_speed = alien_state.moving_direction * 0.1;
-	for mut transform in query.iter_mut() {
-		let x = transform.translation.x;
-		transform.translation.x += moving_speed;
-		if (x < 0. && alien_state.moving_direction < 0.) || (x > 280. && alien_state.moving_direction > 0.) {
-			reached_edge = true;
-		}
-	}
+pub fn move_aliens(mut query: Query<(&mut Transform, &mut AlienCollective)>) {
+	let (mut transform, mut alien_state) = query.single_mut();
 
-	if reached_edge {
+	let moving_speed = alien_state.moving_direction * 0.1;
+	let x = transform.translation.x + moving_speed;
+	transform.translation.x = x;
+	if (x < 0. && alien_state.moving_direction < 0.) || (x > 80. && alien_state.moving_direction > 0.) {
 		alien_state.moving_direction *= -1.;
-		for mut transform in query.iter_mut() {
-			transform.translation.y -= 15.;
-		}
+		transform.translation.y -= 15.;
 	}
 }
 
@@ -48,16 +41,17 @@ pub fn alien_fire(
 	mut commands: Commands,
 	time: Res<Time>,
 	asset_store: Res<AssetStore>,
-	mut alien_state: ResMut<AlienCollectiveState>,
-	query: Query<&Transform, With<Alien>>
+	mut alien_query: Query<&mut AlienCollective>,
+	query: Query<&GlobalTransform, With<Alien>>
 ) {
+	let mut alien_state = alien_query.single_mut();
 	alien_state.shoot_timer.tick(time.delta());
 
 	if !alien_state.shoot_timer.finished() {
 		return;
 	}
 	let positions = query.iter()
-		.map(|t| (t.translation.x, t.translation.y))
+		.map(|t| (t.translation().x, t.translation().y))
 		.collect::<Vec<_>>();
 	
 	if positions.len() == 0 {

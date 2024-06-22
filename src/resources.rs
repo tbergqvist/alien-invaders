@@ -1,4 +1,4 @@
-use bevy::{asset::{AssetServer, Assets, Handle}, math::Vec2, prelude::Resource, render::texture::Image, sprite::TextureAtlasLayout, time::{Timer, TimerMode}};
+use bevy::{asset::{AssetServer, Assets, Handle}, math::{Vec2, Vec3}, prelude::{Component, Resource}, render::texture::Image, sprite::TextureAtlasLayout, time::{Timer, TimerMode}, transform::components::{GlobalTransform, Transform}};
 
 #[derive(Resource)]
 pub struct AssetStore {
@@ -33,13 +33,13 @@ impl AssetStore {
 	}
 }
 
-#[derive(Resource)]
-pub struct AlienCollectiveState {
+#[derive(Component)]
+pub struct AlienCollective {
 	pub moving_direction: f32,
 	pub shoot_timer: Timer,
 }
 
-impl AlienCollectiveState {
+impl AlienCollective {
 	pub fn new() -> Self {
 		Self {
 			moving_direction: 1.,
