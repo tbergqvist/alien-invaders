@@ -10,13 +10,11 @@ pub struct Alien;
 pub struct Velocity(pub Vec2);
 
 #[derive(Component)]
-pub struct AnimationIndexes {
+pub struct Animated {
 	pub start: usize,
 	pub end: usize,
+	pub timer: Timer
 }
-
-#[derive(Component)]
-pub struct AnimationTimer(pub Timer);
 
 #[derive(Component)]
 pub struct Hitable {

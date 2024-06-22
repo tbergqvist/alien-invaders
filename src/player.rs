@@ -19,7 +19,6 @@ pub fn handle_player_input(
 		player_velocity.0.x = 0.;
 	}
 
-
 	fire_cooldown.0.tick(time.delta());
 	if input.pressed(KeyCode::Space) && fire_cooldown.0.finished() {
 		let projectile_pos = Vec2::new(player_transform.translation.x, player_transform.translation.y + 8.);
