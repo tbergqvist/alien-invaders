@@ -1,6 +1,6 @@
-use bevy::{input::ButtonInput, math::Vec3, prelude::{Commands, KeyCode, Query, Res, With}, time::Time, transform::components::Transform};
+use bevy::{input::ButtonInput, math::Vec2, prelude::{Commands, KeyCode, Query, Res, With}, time::Time, transform::components::Transform};
 
-use crate::{asset_store::AssetStore, bundles::create_player_projectile, components::{FireCooldown, Player, Velocity}};
+use crate::{bundles::create_player_projectile, components::{FireCooldown, Player, Velocity}, resources::AssetStore};
 
 pub fn handle_player_input(
 	mut commands: Commands,
@@ -22,7 +22,7 @@ pub fn handle_player_input(
 
 	fire_cooldown.0.tick(time.delta());
 	if input.pressed(KeyCode::Space) && fire_cooldown.0.finished() {
-		let projectile_pos = Vec3::new(player_transform.translation.x, player_transform.translation.y + 8., 0.);
+		let projectile_pos = Vec2::new(player_transform.translation.x, player_transform.translation.y + 8.);
 		commands.spawn(create_player_projectile(projectile_pos, asset_store.player_projectile_texture.clone(), asset_store.projectile_atlas.clone()));
 		fire_cooldown.0.reset();
 	}

@@ -8,7 +8,7 @@ mod alien;
 mod collision;
 mod bundles;
 mod components;
-mod asset_store;
+mod resources;
 mod game_plugin;
 
 fn main() {

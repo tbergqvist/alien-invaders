@@ -30,7 +30,7 @@ pub fn create_player_bundle(texture: Handle<Image>, texture_atlas_layout: Handle
 	)
 }
 
-pub fn create_alien_bundle(location: Vec3, start_frame: usize, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
+pub fn create_alien_bundle(location: Vec2, start_frame: usize, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
 	(
 		SpriteSheetBundle {
 			texture,
@@ -38,7 +38,7 @@ pub fn create_alien_bundle(location: Vec3, start_frame: usize, texture: Handle<I
 				layout: texture_atlas_layout,
 				index: start_frame,
 			},
-			transform: Transform::from_translation(location),
+			transform: Transform::from_translation(location.extend(0.)),
 			..default()
 		}, 
 		Alien, 
@@ -48,7 +48,7 @@ pub fn create_alien_bundle(location: Vec3, start_frame: usize, texture: Handle<I
 	)
 }
 
-pub fn create_player_projectile(location: Vec3, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
+pub fn create_player_projectile(location: Vec2, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
 	(
 		SpriteSheetBundle {
 			texture,
@@ -56,10 +56,29 @@ pub fn create_player_projectile(location: Vec3, texture: Handle<Image>, texture_
 				layout: texture_atlas_layout,
 				index: 0,
 			},
-			transform: Transform::from_translation(location),
+			transform: Transform::from_translation(location.extend(0.)),
 			..default()
 		},
-		Velocity(Vec2{ x: 0., y: 2. }),
+		Velocity(Vec2{ x: 0., y: 5. }),
+		Hitable { size: Vec2::new(3., 10.) },
+		AnimationIndexes { start: 0, end: 1 },
+		AnimationTimer(Timer::from_seconds(0.01, TimerMode::Repeating)),
+		Projectile,
+	)
+}
+
+pub fn create_alien_projectile(location: Vec2, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
+	(
+		SpriteSheetBundle {
+			texture,
+			atlas: TextureAtlas {
+				layout: texture_atlas_layout,
+				index: 0,
+			},
+			transform: Transform::from_translation(location.extend(0.)),
+			..default()
+		},
+		Velocity(Vec2{ x: 0., y: -2. }),
 		Hitable { size: Vec2::new(3., 10.) },
 		AnimationIndexes { start: 0, end: 1 },
 		AnimationTimer(Timer::from_seconds(0.01, TimerMode::Repeating)),

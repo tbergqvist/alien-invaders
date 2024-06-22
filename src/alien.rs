@@ -1,19 +1,8 @@
-use bevy::{asset::Handle, math::Vec3, prelude::{Bundle, Query, ResMut, Resource, With}, render::texture::Image, sprite::TextureAtlasLayout, transform::components::Transform};
+use std::collections::HashMap;
 
-use crate::{bundles::create_alien_bundle, components::Alien};
+use bevy::{asset::Handle, math::Vec2, prelude::{Bundle, Commands, Query, Res, ResMut, With}, render::texture::Image, sprite::TextureAtlasLayout, time::Time, transform::components::Transform};
 
-#[derive(Resource)]
-pub struct AlienCollectiveState {
-	pub moving_direction: f32,
-}
-
-impl AlienCollectiveState {
-	pub fn new() -> Self {
-		Self {
-			moving_direction: 1.,
-		}
-	}
-}
+use crate::{bundles::{create_alien_bundle, create_alien_projectile}, components::Alien, resources::{AlienCollectiveState, AssetStore}};
 
 pub fn create_aliens(textures: Vec<Handle<Image>>, layout: Handle<TextureAtlasLayout>) -> Vec<impl Bundle> {
 	vec![create_specific_aliens( 11, 200., textures[0].clone(), layout.clone()),
@@ -30,7 +19,7 @@ fn create_specific_aliens(amounts: i32, start_y: f32, texture: Handle<Image>, la
 			let x = i % 11;
 			let y = i / 11;
 
-			let position = Vec3::new(x as f32 * 20., start_y - (y as f32 * 20.), 0.);
+			let position = Vec2::new(x as f32 * 20., start_y - (y as f32 * 20.));
 			create_alien_bundle(position, y as usize, texture.clone(), layout.clone())
 		})
 		.collect()
@@ -50,7 +39,47 @@ pub fn move_aliens(mut alien_state: ResMut<AlienCollectiveState>, mut query: Que
 	if reached_edge {
 		alien_state.moving_direction *= -1.;
 		for mut transform in query.iter_mut() {
-			transform.translation.y -= 20.;
+			transform.translation.y -= 15.;
 		}
+	}
+}
+
+pub fn alien_fire(
+	mut commands: Commands,
+	time: Res<Time>,
+	asset_store: Res<AssetStore>,
+	mut alien_state: ResMut<AlienCollectiveState>,
+	query: Query<&Transform, With<Alien>>
+) {
+	alien_state.shoot_timer.tick(time.delta());
+
+	if !alien_state.shoot_timer.finished() {
+		return;
+	}
+	let positions = query.iter()
+		.map(|t| (t.translation.x, t.translation.y))
+		.collect::<Vec<_>>();
+	
+	if positions.len() == 0 {
+		return;
+	}
+
+	let valid_positions = positions.iter().fold(HashMap::new(), |mut map, (x, y)| {
+		map.entry(*x as i32)
+			.and_modify(|min_y| *min_y = y.min(*min_y))
+			.or_insert(*y);
+		map
+	})
+	.into_iter()
+	.collect::<Vec<_>>();
+
+	if valid_positions.len() > 0 {
+		let firing_alien = rand::random::<usize>() % valid_positions.len();
+		let pos = valid_positions[firing_alien];
+		commands.spawn(create_alien_projectile(
+			Vec2::new(pos.0 as f32, pos.1 - 20.), 
+			asset_store.player_projectile_texture.clone(),
+			asset_store.projectile_atlas.clone()
+		));
 	}
 }
