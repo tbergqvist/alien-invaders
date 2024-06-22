@@ -26,3 +26,11 @@ pub struct Projectile;
 
 #[derive(Component)]
 pub struct FireCooldown(pub Timer);
+
+#[derive(Component)]
+pub struct Health {
+	pub hp: i32
+}
+
+#[derive(Component)]
+pub struct Collided;

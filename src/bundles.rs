@@ -1,6 +1,6 @@
 use bevy::{asset::Handle, math::{Vec2, Vec3}, prelude::{Bundle, Camera2dBundle}, render::{camera::{OrthographicProjection, ScalingMode}, texture::Image}, sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout}, time::{Timer, TimerMode}, transform::components::Transform, utils::default};
 
-use crate::components::{Alien, Animated, FireCooldown, Hitable, Player, Projectile, Velocity};
+use crate::components::{Alien, Animated, FireCooldown, Health, Hitable, Player, Projectile, Velocity};
 
 pub fn create_camera_bundle() -> impl Bundle {
 	Camera2dBundle {
@@ -26,7 +26,9 @@ pub fn create_player_bundle(texture: Handle<Image>, texture_atlas_layout: Handle
 		},
 		Velocity(Vec2::ZERO),
 		FireCooldown(Timer::from_seconds(1., TimerMode::Once)),
+		Hitable { size: Vec2::new(16., 4.) },
 		Player,
+		Health { hp: 3 },
 	)
 }
 
@@ -44,6 +46,7 @@ pub fn create_alien_bundle(location: Vec2, start_frame: usize, texture: Handle<I
 		Alien, 
 		Animated { start: 0, end: 1, timer: Timer::from_seconds(1., TimerMode::Repeating) }, 
 		Hitable { size: Vec2::new(16., 12.) },
+		Health { hp: 1 },
 	)
 }
 
@@ -62,6 +65,7 @@ pub fn create_player_projectile(location: Vec2, texture: Handle<Image>, texture_
 		Hitable { size: Vec2::new(3., 10.) },
 		Animated { start: 0, end: 1, timer: Timer::from_seconds(0.01, TimerMode::Repeating) },
 		Projectile,
+		Health { hp: 1 },
 	)
 }
 
@@ -80,5 +84,6 @@ pub fn create_alien_projectile(location: Vec2, texture: Handle<Image>, texture_a
 		Hitable { size: Vec2::new(3., 10.) },
 		Animated { start: 0, end: 1, timer: Timer::from_seconds(0.01, TimerMode::Repeating) },
 		Projectile,
+		Health { hp: 1 },
 	)
 }
