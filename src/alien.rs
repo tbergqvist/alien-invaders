@@ -27,7 +27,8 @@ fn create_specific_aliens(amounts: i32, start_y: f32, texture: Handle<Image>, la
 
 pub fn move_aliens(mut alien_state: ResMut<AlienCollectiveState>, mut query: Query<&mut Transform, With<Alien>>) {
 	let mut reached_edge = false;
-	let moving_speed = alien_state.moving_direction * 0.1;
+	let aliens_alive = query.iter().count() as f32;
+	let moving_speed = alien_state.moving_direction * (0.1 + ((55. - aliens_alive) / 55.) * 0.5);
 	for mut transform in query.iter_mut() {
 		let x = transform.translation.x;
 		transform.translation.x += moving_speed;
