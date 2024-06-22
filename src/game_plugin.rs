@@ -1,6 +1,6 @@
-use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::system::{Commands, Res, ResMut}, hierarchy::BuildChildren, prelude::{IntoSystemConfigs, SpatialBundle}, render::{camera::ClearColor, color::Color}, sprite::TextureAtlasLayout, transform::components::{GlobalTransform, Transform}, utils::default};
+use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::system::{Commands, Res, ResMut}, prelude::IntoSystemConfigs, render::{camera::ClearColor, color::Color}, sprite::TextureAtlasLayout};
 
-use crate::{alien::{alien_fire, create_aliens, move_aliens}, animation::animate, bundles::{create_camera_bundle, create_player_bundle}, collision::{check_collisions, decrease_health, remove_collided}, movement::move_entities, player::handle_player_input, resources::{AlienCollective, AssetStore}};
+use crate::{alien::{alien_fire, create_aliens, move_aliens}, animation::animate, bundles::{create_camera_bundle, create_player_bundle}, collision::{check_collisions, decrease_health, remove_collided}, movement::move_entities, player::handle_player_input, resources::{AlienCollectiveState, AssetStore}};
 
 pub struct GamePlugin;
 
@@ -28,13 +28,8 @@ fn create_world(
 ) {	
 	let asset_store = AssetStore::new(&asset_server, &mut texture_atlas_layouts);
 	commands.spawn(create_camera_bundle());
+	commands.insert_resource(AlienCollectiveState::new());
 	commands.spawn(create_player_bundle(asset_store.player_texture.clone(), asset_store.player_atlas.clone()));
-
-	commands.spawn((AlienCollective::new(), SpatialBundle::default())).with_children(|parent| {
-		for alien in create_aliens(asset_store.alien_textures.clone(), asset_store.alien_atlas.clone()).into_iter() {
-			parent.spawn(alien);
-		}
-	});
-	
+	commands.spawn_batch(create_aliens(asset_store.alien_textures.clone(), asset_store.alien_atlas.clone()));
 	commands.insert_resource(asset_store);
 }

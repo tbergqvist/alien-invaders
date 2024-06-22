@@ -1,10 +1,10 @@
-use bevy::{math::bounding::{Aabb2d, IntersectsVolume}, prelude::{Commands, Entity, Query, With}, transform::components::{GlobalTransform, Transform}};
+use bevy::{math::bounding::{Aabb2d, IntersectsVolume}, prelude::{Commands, Entity, Query, With}, transform::components::Transform};
 
 use crate::components::{Collided, Health, Hitable, Projectile};
 
 pub fn check_collisions(
 		mut commands: Commands,
-		hitables: Query<(Entity, &GlobalTransform, &Hitable, Option<&Projectile>)>
+		hitables: Query<(Entity, &Transform, &Hitable, Option<&Projectile>)>
 ) {
 	let mut iter = hitables.iter_combinations();
 
@@ -14,12 +14,12 @@ pub fn check_collisions(
 		}
 
 		let hitable_aabb = Aabb2d::new(
-			transform.translation().truncate(), 
+			transform.translation.truncate(), 
 			hitable.size / 2.
 		);
 
 		let projectile_aabb = Aabb2d::new(
-			transform2.translation().truncate(), 
+			transform2.translation.truncate(), 
 			hitable2.size / 2.
 		);
 
