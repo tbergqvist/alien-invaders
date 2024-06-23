@@ -4,9 +4,9 @@ use crate::components::{Alien, Animated, FireCooldown, Health, Hitable, Player, 
 
 pub fn create_camera_bundle() -> impl Bundle {
 	Camera2dBundle {
-		transform: Transform::from_translation(Vec3::new(140., 100., 1.)),
+		transform: Transform::from_translation(Vec3::new(180., 100., 1.)),
 		projection: OrthographicProjection {
-			scaling_mode: ScalingMode::WindowSize(4.),
+			scaling_mode: ScalingMode::WindowSize(3.),
 			..default()
 		},
 		..default()
@@ -51,25 +51,14 @@ pub fn create_alien_bundle(location: Vec2, start_frame: usize, texture: Handle<I
 }
 
 pub fn create_player_projectile(location: Vec2, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
-	(
-		SpriteSheetBundle {
-			texture,
-			atlas: TextureAtlas {
-				layout: texture_atlas_layout,
-				index: 0,
-			},
-			transform: Transform::from_translation(location.extend(0.)),
-			..default()
-		},
-		Velocity(Vec2{ x: 0., y: 5. }),
-		Hitable { size: Vec2::new(3., 10.) },
-		Animated { start: 0, end: 1, timer: Timer::from_seconds(0.01, TimerMode::Repeating) },
-		Projectile,
-		Health { hp: 1 },
-	)
+	create_projectile(location, texture, texture_atlas_layout, Vec2{ x: 0., y: 6. })
 }
 
 pub fn create_alien_projectile(location: Vec2, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
+	create_projectile(location, texture, texture_atlas_layout, Vec2{ x: 0., y: -2. })
+}
+
+fn create_projectile(location: Vec2, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>, velocity: Vec2) -> impl Bundle {
 	(
 		SpriteSheetBundle {
 			texture,
@@ -80,9 +69,9 @@ pub fn create_alien_projectile(location: Vec2, texture: Handle<Image>, texture_a
 			transform: Transform::from_translation(location.extend(0.)),
 			..default()
 		},
-		Velocity(Vec2{ x: 0., y: -2. }),
-		Hitable { size: Vec2::new(3., 10.) },
-		Animated { start: 0, end: 1, timer: Timer::from_seconds(0.01, TimerMode::Repeating) },
+		Velocity(velocity),
+		Hitable { size: Vec2::new(1., 8.) },
+		Animated { start: 0, end: 3, timer: Timer::from_seconds(1. / 60., TimerMode::Repeating) },
 		Projectile,
 		Health { hp: 1 },
 	)

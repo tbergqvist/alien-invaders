@@ -20,7 +20,7 @@ impl AssetStore {
 		let player_projectile_texture = asset_server.load("player_projectile.png");
 		let player_layout = texture_atlas_layouts.add(TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 1, 1, None, None));
 		let alien_layout = texture_atlas_layouts.add(TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 1, 2, None, None));
-		let projectile_layout = texture_atlas_layouts.add(TextureAtlasLayout::from_grid(Vec2::new(8.0, 8.0), 1, 2, None, None));
+		let projectile_layout = texture_atlas_layouts.add(TextureAtlasLayout::from_grid(Vec2::new(1.0, 8.0), 4, 1, None, None));
 	
 		Self {
 			player_texture,

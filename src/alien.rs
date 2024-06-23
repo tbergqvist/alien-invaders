@@ -5,9 +5,9 @@ use bevy::{asset::Handle, math::Vec2, prelude::{Bundle, Commands, Query, Res, Re
 use crate::{bundles::{create_alien_bundle, create_alien_projectile}, components::Alien, resources::{AlienCollectiveState, AssetStore}};
 
 pub fn create_aliens(textures: Vec<Handle<Image>>, layout: Handle<TextureAtlasLayout>) -> Vec<impl Bundle> {
-	vec![create_specific_aliens( 11, 200., textures[0].clone(), layout.clone()),
-		create_specific_aliens( 22, 180., textures[1].clone(), layout.clone()),
-		create_specific_aliens( 22, 140., textures[2].clone(), layout)
+	vec![create_specific_aliens( 11, 250., textures[0].clone(), layout.clone()),
+		create_specific_aliens( 22, 230., textures[1].clone(), layout.clone()),
+		create_specific_aliens( 22, 190., textures[2].clone(), layout)
 	]
 	.into_iter()
 	.flatten()
@@ -28,11 +28,11 @@ fn create_specific_aliens(amounts: i32, start_y: f32, texture: Handle<Image>, la
 pub fn move_aliens(mut alien_state: ResMut<AlienCollectiveState>, mut query: Query<&mut Transform, With<Alien>>) {
 	let mut reached_edge = false;
 	let aliens_alive = query.iter().count() as f32;
-	let moving_speed = alien_state.moving_direction * (0.1 + ((55. - aliens_alive) / 55.) * 0.5);
+	let moving_speed = alien_state.moving_direction * (1. / aliens_alive) * 5.;
 	for mut transform in query.iter_mut() {
 		let x = transform.translation.x;
 		transform.translation.x += moving_speed;
-		if (x < 0. && alien_state.moving_direction < 0.) || (x > 280. && alien_state.moving_direction > 0.) {
+		if (x < 0. && alien_state.moving_direction < 0.) || (x > 360. && alien_state.moving_direction > 0.) {
 			reached_edge = true;
 		}
 	}
