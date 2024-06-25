@@ -61,7 +61,7 @@ pub fn alien_fire(
 		.map(|t| (t.translation.x, t.translation.y))
 		.collect::<Vec<_>>();
 	
-	if positions.len() == 0 {
+	if positions.is_empty() {
 		return;
 	}
 
@@ -74,7 +74,7 @@ pub fn alien_fire(
 	.into_iter()
 	.collect::<Vec<_>>();
 
-	if valid_positions.len() > 0 {
+	if !valid_positions.is_empty() {
 		let firing_alien = rand::random::<usize>() % valid_positions.len();
 		let pos = valid_positions[firing_alien];
 		commands.spawn(create_alien_projectile(
