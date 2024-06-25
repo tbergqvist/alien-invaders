@@ -1,6 +1,6 @@
 use bevy::{app::{App, FixedUpdate, Plugin, Startup, Update}, asset::{AssetServer, Assets}, ecs::system::{Commands, Res, ResMut}, prelude::IntoSystemConfigs, render::{camera::ClearColor, color::Color}, sprite::TextureAtlasLayout};
 
-use crate::{alien::{alien_fire, create_aliens, move_aliens}, animation::animate, bundles::{create_camera_bundle, create_player_bundle}, collision::{check_collisions, decrease_health, remove_collided}, movement::move_entities, player::handle_player_input, resources::{AlienCollectiveState, AssetStore}};
+use crate::{alien::{alien_fire, create_aliens, move_aliens}, animation::animate, bundles::{create_camera_bundle, create_player_bundle}, collision::{check_collisions, decrease_health, remove_collided}, gui::{setup_gui, update_player_counter}, movement::move_entities, player::handle_player_input, resources::{AlienCollectiveState, AssetStore}};
 
 pub struct GamePlugin;
 
@@ -14,9 +14,9 @@ impl Plugin for GamePlugin {
 
 		app
 			.insert_resource(ClearColor(Color::BLACK))
-			.add_systems(Startup, create_world)
+			.add_systems(Startup, (create_world, setup_gui).chain())
 			.add_systems(FixedUpdate, (move_entities, move_aliens, alien_fire, collision_systems))
-			.add_systems(Update, (handle_player_input, animate))
+			.add_systems(Update, (handle_player_input, animate, update_player_counter))
 		;
 	}
 }

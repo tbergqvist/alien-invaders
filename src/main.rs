@@ -9,6 +9,7 @@ mod collision;
 mod bundles;
 mod components;
 mod resources;
+mod gui;
 mod game_plugin;
 
 fn main() {

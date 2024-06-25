@@ -15,14 +15,14 @@ pub fn create_aliens(textures: Vec<Handle<Image>>, layout: Handle<TextureAtlasLa
 }
 
 fn create_specific_aliens(amounts: i32, start_y: f32, texture: Handle<Image>, layout: Handle<TextureAtlasLayout>) -> Vec<impl Bundle> {
-		(0..amounts).map(|i| {
-			let x = i % 11;
-			let y = i / 11;
+	(0..amounts).map(|i| {
+		let x = i % 11;
+		let y = i / 11;
 
-			let position = Vec2::new(x as f32 * 20., start_y - (y as f32 * 20.));
-			create_alien_bundle(position, y as usize, texture.clone(), layout.clone())
-		})
-		.collect()
+		let position = Vec2::new(x as f32 * 20., start_y - (y as f32 * 20.));
+		create_alien_bundle(position, y as usize, texture.clone(), layout.clone())
+	})
+	.collect()
 }
 
 pub fn move_aliens(mut alien_state: ResMut<AlienCollectiveState>, mut query: Query<&mut Transform, With<Alien>>) {
