@@ -34,3 +34,8 @@ pub struct Health {
 
 #[derive(Component)]
 pub struct Collided;
+
+#[derive(Component)]
+pub struct LifeTimer {
+	pub timer: Timer
+}

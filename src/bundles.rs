@@ -1,6 +1,6 @@
 use bevy::{asset::Handle, math::{Vec2, Vec3}, prelude::{Bundle, Camera2dBundle}, render::{camera::{OrthographicProjection, ScalingMode}, texture::Image}, sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout}, time::{Timer, TimerMode}, transform::components::Transform, utils::default};
 
-use crate::components::{Alien, Animated, FireCooldown, Health, Hitable, Player, Projectile, Velocity};
+use crate::components::{Alien, Animated, FireCooldown, Health, Hitable, LifeTimer, Player, Projectile, Velocity};
 
 pub fn create_camera_bundle() -> impl Bundle {
 	Camera2dBundle {
@@ -74,5 +74,21 @@ fn create_projectile(location: Vec2, texture: Handle<Image>, texture_atlas_layou
 		Animated { start: 0, end: 3, timer: Timer::from_seconds(1. / 60., TimerMode::Repeating) },
 		Projectile,
 		Health { hp: 1 },
+	)
+}
+
+pub fn create_explosion(location: Vec2, texture: Handle<Image>, texture_atlas_layout: Handle<TextureAtlasLayout>) -> impl Bundle {
+	(
+		SpriteSheetBundle {
+			texture,
+			atlas: TextureAtlas {
+				layout: texture_atlas_layout,
+				index: 0,
+			},
+			transform: Transform::from_translation(location.extend(0.)),
+			..default()
+		},
+		Animated { start: 0, end: 1, timer: Timer::from_seconds(0.1, TimerMode::Once) },
+		LifeTimer { timer: Timer::from_seconds(0.2, TimerMode::Once) },
 	)
 }
