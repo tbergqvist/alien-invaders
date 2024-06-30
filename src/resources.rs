@@ -1,8 +1,16 @@
-use bevy::{asset::{AssetServer, Assets, Handle}, math::Vec2, prelude::Resource, render::texture::Image, sprite::TextureAtlasLayout, time::{Timer, TimerMode}};
+use bevy::{asset::{AssetServer, Assets, Handle}, math::Vec2, prelude::{Resource, States}, render::texture::Image, sprite::TextureAtlasLayout, time::{Timer, TimerMode}};
+
+#[derive(States, Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GameState {
+	Loading,
+	InGame,
+}
 
 #[derive(Resource)]
 pub struct AssetStore {
 	pub player_texture: Handle<Image>,
+	pub shield_base: Handle<Image>,
+	pub shield_textures: Vec<Handle<Image>>,
 	pub alien_textures: Vec<Handle<Image>>,
 	pub player_projectile_texture: Handle<Image>,
 	pub player_atlas: Handle<TextureAtlasLayout>,
@@ -18,6 +26,7 @@ impl AssetStore {
 		texture_atlas_layouts: &mut Assets<TextureAtlasLayout>
 	) -> Self {
 		let player_texture = asset_server.load("player.png");
+		let shield_base = asset_server.load("shield.png");
 		let alien_textures = vec![asset_server.load("alien1.png"), asset_server.load("alien2.png"), asset_server.load("alien3.png")];
 		let player_projectile_texture = asset_server.load("player_projectile.png");
 		let explosion_texture = asset_server.load("explosion.png");
@@ -29,6 +38,8 @@ impl AssetStore {
 		Self {
 			player_texture,
 			alien_textures,
+			shield_base,
+			shield_textures: vec![],
 			player_projectile_texture,
 			player_atlas: player_layout,
 			alien_atlas: alien_layout,

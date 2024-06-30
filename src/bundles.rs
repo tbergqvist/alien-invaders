@@ -26,7 +26,7 @@ pub fn create_player_bundle(texture: Handle<Image>, texture_atlas_layout: Handle
 		},
 		Velocity(Vec2::ZERO),
 		FireCooldown(Timer::from_seconds(1., TimerMode::Once)),
-		Hitable { size: Vec2::new(16., 4.) },
+		Hitable { size: Vec2::new(16., 16.) },
 		Player,
 		Health { hp: 3 },
 	)
@@ -90,5 +90,20 @@ pub fn create_explosion(location: Vec2, texture: Handle<Image>, texture_atlas_la
 		},
 		Animated { start: 0, end: 1, timer: Timer::from_seconds(0.1, TimerMode::Once) },
 		LifeTimer { timer: Timer::from_seconds(0.2, TimerMode::Once) },
+	)
+}
+
+pub fn create_shield_bundle(texture: &Handle<Image>, x: f32) -> impl Bundle {
+	(
+		SpriteSheetBundle {
+			texture: texture.clone(),
+			atlas: TextureAtlas {
+				layout: bevy::prelude::Handle::default(),
+				index: 0,
+			},
+			transform: Transform::from_xyz(x, 50., 0.),
+			..default()
+		},
+		Hitable { size: Vec2::new(32., 32.) }
 	)
 }
